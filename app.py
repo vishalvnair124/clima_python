@@ -1,7 +1,18 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import userfetch
+import weatherfetch
 
 app = FastAPI()
+
+# Allowing all origins for demonstration purposes
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def hello_world():
@@ -14,7 +25,14 @@ def get_user(user_id: str):
         return user_data
     else:
         raise HTTPException(status_code=404, detail="User not found")
+@app.get("/latest_weather")
+def get_latest_weather():
+    latest_weather = weatherfetch.get_latest_weather()
+    if latest_weather:
+        return latest_weather
+    else:
+        raise HTTPException(status_code=404, detail="Weather data not found")
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, port=8000)
