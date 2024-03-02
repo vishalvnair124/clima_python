@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException,Request
 from fastapi.middleware.cors import CORSMiddleware
+from get_daily import get_daily_weather
+from get_hourly import get_hourly_weather
 import userfetch
 import weatherfetch
 import user
@@ -7,7 +9,17 @@ import login
 import mail
 import check
 
+
 app = FastAPI()
+
+# Allowing all origins for demonstration purposes
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/check_email/")
@@ -30,14 +42,7 @@ async def send_email(email_data: mail.EmailData):
     else:
         raise HTTPException(status_code=500, detail="Failed to send email")
 
-# Allowing all origins for demonstration purposes
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
 
 @app.post("/login/")
 async def user_login(request: Request):
@@ -52,10 +57,32 @@ async def user_login(request: Request):
         return {"message": "Login successful"}
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    
+
+
+
 @app.get("/")
 def hello_world():
     return {"message": "Hello World"}
+
+
+@app.get("/hourly_weather/{date_str}")
+def get_daily_data(date_str: str):
+    hourly_weather_data = get_daily_weather(date_str)
+    if hourly_weather_data:
+        return hourly_weather_data
+    else:
+        raise HTTPException(status_code=404, detail="No hourly weather data found")
+
+
+@app.get("/hourly_weather/{date_str}/{hour}")
+def get_hour_data(date_str: str, hour: int):
+    hourly_weather_data = get_hourly_weather(date_str, hour)
+    if hourly_weather_data:
+        return hourly_weather_data
+    else:
+        raise HTTPException(status_code=404, detail="No hourly weather data found")
+
+
 
 @app.get("/users/{user_id}")
 def get_user(user_id: str):
@@ -64,6 +91,8 @@ def get_user(user_id: str):
         return user_data
     else:
         raise HTTPException(status_code=404, detail="User not found")
+
+
 # POST endpoint to add a new user
 @app.post("/add_user/")
 async def create_user(request: Request):
@@ -76,6 +105,8 @@ async def create_user(request: Request):
         raise HTTPException(status_code=400, detail="User data is incomplete")
     return user.add_user( user_name, user_email,user_password)
 
+
+
 @app.get("/latest_weather")
 def get_latest_weather():
     latest_weather = weatherfetch.get_latest_weather()
@@ -83,6 +114,7 @@ def get_latest_weather():
         return latest_weather
     else:
         raise HTTPException(status_code=404, detail="Weather data not found")
+
 
 if __name__ == '__main__':
     import uvicorn
