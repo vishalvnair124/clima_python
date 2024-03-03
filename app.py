@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException,Request
 from fastapi.middleware.cors import CORSMiddleware
+from forecast import get_forecast_weather
 from get_daily import get_daily_weather
 from get_hourly import get_hourly_weather
+from thisweektemp import get_thisweektemp_weather
 import userfetch
 import weatherfetch
 import user
@@ -79,6 +81,23 @@ def get_hour_data(date_str: str, hour: int):
     hourly_weather_data = get_hourly_weather(date_str, hour)
     if hourly_weather_data:
         return hourly_weather_data
+    else:
+        raise HTTPException(status_code=404, detail="No hourly weather data found")
+
+
+@app.get("/forecast")
+def get_forecast_data():
+    weather_data = get_forecast_weather()
+    if weather_data:
+        return weather_data
+    else:
+        raise HTTPException(status_code=404, detail="No hourly weather data found")
+
+@app.get("/thisweektemp")
+def get_thisweek_data():
+    weather_data = get_thisweektemp_weather()
+    if weather_data:
+        return weather_data
     else:
         raise HTTPException(status_code=404, detail="No hourly weather data found")
 
