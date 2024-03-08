@@ -27,9 +27,9 @@ forecasts = {}
 for variable, model in loaded_models.items():
     forecasts[variable] = model.forecast(steps=len(sample_df))
 
-print("Forecasts:")
-for variable, forecast_values in forecasts.items():
-    print(f"{variable}: {forecast_values}")
+# print("Forecasts:")
+# for variable, forecast_values in forecasts.items():
+#     print(f"{variable}: {forecast_values}")
 
 def get_forecast_weather():
     result = {
@@ -43,5 +43,5 @@ def get_forecast_weather():
 
 # Call the function to get forecasted values
 forecasted_values = get_forecast_weather()
-print("\nForecasted Values:")
-print(forecasted_values)
+# print("\nForecasted Values:")
+# print(forecasted_values)
