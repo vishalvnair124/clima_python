@@ -37,7 +37,7 @@ def get_forecast_weather():
         "PM25": forecasts['PM 2.5'],
         "SO2": forecasts['SO2'],
         "NO2": forecasts['NO2'],
-        "Temperature": forecasts['Temperature'],
+       
     }
     return result
 

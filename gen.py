@@ -58,4 +58,4 @@ def insert_sample_weather_data(num_days=10):
         mydb.close()
 
 # Call the function to insert sample weather data for 10 days
-insert_sample_weather_data(10)
+insert_sample_weather_data(1)

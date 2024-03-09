@@ -76,7 +76,7 @@ try:
 
     def get_thisweektemp_weather():
         result = {
-            "Today Temperature": today_temp,
+            "Today_Temperature": today_temp,
             "Temperature": forecasts['Temperature'],
             # Add other forecasted variables here if needed
         }

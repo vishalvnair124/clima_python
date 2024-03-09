@@ -24,7 +24,7 @@ def get_latest_weather():
 
         if latest_weather:
             # Convert the result to a dictionary for JSON serialization
-            recorded_time = latest_weather[13]
+            recorded_time = latest_weather[12]
             recorded_date = recorded_time.date() 
             recorded_time_formatted = recorded_time.strftime("%I:%M:%S %p")
             result = {
@@ -36,11 +36,10 @@ def get_latest_weather():
                "UV_Index": latest_weather[5],
                "Wind_Speed": latest_weather[6],
                "Wind_Direction": latest_weather[7],
-               "Air_Quality_Index": latest_weather[8],
-               "CO_Level": latest_weather[9],
-               "PM2.5": latest_weather[10],
-               "SO2_Level": latest_weather[11],
-               "NO2_Level": latest_weather[12],
+               "CO_Level": latest_weather[8],
+               "PM2.5": latest_weather[9],
+               "SO2_Level": latest_weather[10],
+               "NO2_Level": latest_weather[11],
                "Recorded_Time": recorded_time_formatted ,
                "Recorded_Date": recorded_date.isoformat() 
             }

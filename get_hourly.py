@@ -22,7 +22,7 @@ def get_hourly_weather(date_str, hour):
         hourly_weather = mycursor.fetchone()
 
         if hourly_weather:
-            recorded_time = hourly_weather[13]
+            recorded_time = hourly_weather[12]
             recorded_date = recorded_time.date()
             recorded_time_formatted = recorded_time.strftime("%I:%M:%S %p")
 
@@ -35,11 +35,11 @@ def get_hourly_weather(date_str, hour):
                 "UV_Index": hourly_weather[5],
                 "Wind_Speed": hourly_weather[6],
                 "Wind_Direction": hourly_weather[7],
-                "Air_Quality_Index": hourly_weather[8],
-                "CO_Level": hourly_weather[9],
-                "PM2.5": hourly_weather[10],
-                "SO2_Level": hourly_weather[11],
-                "NO2_Level": hourly_weather[12],
+                
+                "CO_Level": hourly_weather[8],
+                "PM2.5": hourly_weather[9],
+                "SO2_Level": hourly_weather[10],
+                "NO2_Level": hourly_weather[11],
                 "Recorded_Time": recorded_time_formatted,
                 "Recorded_Date": recorded_date.isoformat()
             }

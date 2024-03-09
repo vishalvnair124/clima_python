@@ -27,7 +27,7 @@ def get_daily_weather(date_str):
 
         result = {}
         for i, record in enumerate(hourly_weather):
-            recorded_time = record[13]
+            recorded_time = record[12]
             recorded_date = recorded_time.date()
             recorded_time_formatted = recorded_time.strftime("%I:%M:%S %p")
 
@@ -40,11 +40,10 @@ def get_daily_weather(date_str):
                 "UV_Index": record[5],
                 "Wind_Speed": record[6],
                 "Wind_Direction": record[7],
-                "Air_Quality_Index": record[8],
-                "CO_Level": record[9],
-                "PM2.5": record[10],
-                "SO2_Level": record[11],
-                "NO2_Level": record[12],
+                "CO_Level": record[8],
+                "PM2.5": record[9],
+                "SO2_Level": record[10],
+                "NO2_Level": record[11],
                 "Recorded_Time": recorded_time_formatted,
                 "Recorded_Date": recorded_date.isoformat()
             }
