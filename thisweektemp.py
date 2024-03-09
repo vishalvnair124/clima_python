@@ -1,7 +1,7 @@
 import mysql.connector
 import pandas as pd
-from io import StringIO
 import pickle
+from pmdarima import auto_arima
 from datetime import datetime, timedelta
 
 # Define db_config globally
@@ -26,9 +26,6 @@ def get_today_temp(cursor):
 # Connect to the database
 try:
     connection = mysql.connector.connect(**db_config)
-    # print("Connected to MySQL database!")
-
-    # Create a cursor object to interact with the database
     cursor = connection.cursor()
 
     # Fetch daily average data from the last 7 days
@@ -46,39 +43,35 @@ try:
     GROUP BY DATE(Wt_recordedtime)
     """
     cursor.execute(query)
-
-    # Fetch all rows
     rows = cursor.fetchall()
 
-    # Construct the formatted string
-    formatted_data = "Date,Temperature,Humidity,Pressure,CO,SO2,NO2,PM 2.5\n"
-    for row in rows:
-        formatted_data += f"{row[0]},{row[1]},{row[2]},{row[3]},{row[4]},{row[5]},{row[6]},{row[7]}\n"
-
-    # Print the formatted data
-    # print(formatted_data)
+    # Convert fetched data into a DataFrame
+    columns = ['Date', 'Temperature', 'Humidity', 'Pressure', 'CO', 'SO2', 'NO2', 'PM 2.5']
+    data = pd.DataFrame(rows, columns=columns)
 
     # Load the fitted models from pickle file
     with open('arima_models.pkl', 'rb') as f:
         loaded_models = pickle.load(f)
 
+    # Retrain ARIMA models on the combined data
+    retrained_models = {}
+    for variable in loaded_models:
+        model = auto_arima(data[variable], seasonal=False, suppress_warnings=True)
+        retrained_models[variable] = model
+
+    # Forecast future values for each variable using the retrained ARIMA models
+    forecasts = {}
+    for variable, model in retrained_models.items():
+        forecasts[variable] = model.predict(n_periods=6)
+
     # Get today's temperature
     today_temp = get_today_temp(cursor)
-
-    # Forecast future values for each variable using the loaded ARIMA models
-    forecasts = {}
-    for variable, model in loaded_models.items():
-        forecasts[variable] = model.forecast(steps=6)
-
-    # print("\nForecasts:")
-    # for variable, forecast_values in forecasts.items():
-    #     print(f"{variable}: {forecast_values}")
 
     def get_thisweektemp_weather():
         result = {
             "Today_Temperature": today_temp,
             "Temperature": forecasts['Temperature'],
-            # Add other forecasted variables here if needed
+          
         }
         return result
 
