@@ -103,13 +103,27 @@ def get_thisweek_data():
 
 
 
-@app.get("/users/{user_id}")
-def get_user(user_id: str):
-    user_data = userfetch.get_user_data(user_id)
-    if user_data:
-        return user_data
+@app.get("/users/{user_email}/{user_password}")
+def get_user_by_email_and_password(user_email: str, user_password: str):
+    # Authenticate the user using the provided credentials
+    if login.authenticate_user(user_email, user_password):
+        # If authentication is successful, retrieve the user's data
+        user_data = userfetch.get_user_data(user_email)
+        if user_data:
+            return user_data
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
     else:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=401, detail="Authentication failed")
+
+
+# @app.get("/users/{user_email}")
+# def get_user(user_email: str):
+#     user_data = userfetch.get_user_data(user_email)
+#     if user_data:
+#         return user_data
+#     else:
+#         raise HTTPException(status_code=404, detail="User not found")
 
 
 # POST endpoint to add a new user

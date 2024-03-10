@@ -1,6 +1,6 @@
 import mysql.connector
 
-def get_user_data(user_id):
+def get_user_data(user_email):
     # Replace these with your actual MySQL connection details
     db_config = {
         "host": "localhost",
@@ -15,15 +15,14 @@ def get_user_data(user_id):
         mycursor = mydb.cursor()
 
         # Execute a query to fetch data from the 'clima_user' table
-        query = f"SELECT user_id, user_name FROM clima_users WHERE user_id = '{user_id}'"
+        query = f"SELECT user_name FROM clima_users WHERE user_email = '{user_email}'"
         mycursor.execute(query)
 
         # Fetch the user data
         user_data = mycursor.fetchone()
 
         if user_data:
-            user_id, user_name = user_data
-            return {"user_id": user_id, "user_name": user_name}
+            return {"user_email": user_email, "user_name": user_data[0]}
         else:
             return None
 
@@ -35,3 +34,4 @@ def get_user_data(user_id):
         # Close the cursor and database connection
         mycursor.close()
         mydb.close()
+
