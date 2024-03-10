@@ -20,7 +20,7 @@ def generate_random_weather():
         round(random.uniform(0, 10), 2),    # UV Index (0-10)
         round(random.uniform(0, 20), 2),    # Wind Speed (0-20 m/s)
         random.randint(0, 80),             # Wind Direction (0-360 degrees)
-        round(random.uniform(0, 300), 2),   # Air Quality Index (0-300)
+       
         round(random.uniform(0, 5), 2),     # CO Level (0-5 ppm)
         round(random.uniform(0, 50), 2),    # PM2.5 (0-50 µg/m³)
         round(random.uniform(0, 5), 2),     # SO2 Level (0-5 ppm)
@@ -42,7 +42,7 @@ def insert_sample_weather_data(num_days=10):
             for j in range(24):
                 weather_datetime = start_date + timedelta(days=i, hours=j)
                 weather_data = generate_random_weather()
-                query = "INSERT INTO weather_data (Wt_temp, Wt_hum, Wt_pre, Wt_rain, Wt_uv, Wt_windspeed, Wt_winddir, Wt_aqi, Wt_co, Wt_pmtwo, Wt_sotwo, Wt_notwo, Wt_recordedtime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                query = "INSERT INTO weather_data (Wt_temp, Wt_hum, Wt_pre, Wt_rain, Wt_uv, Wt_windspeed, Wt_winddir,  Wt_co, Wt_pmtwo, Wt_sotwo, Wt_notwo, Wt_recordedtime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 mycursor.execute(query, weather_data + (weather_datetime,))
         
         # Commit the transaction
@@ -58,4 +58,4 @@ def insert_sample_weather_data(num_days=10):
         mydb.close()
 
 # Call the function to insert sample weather data for 10 days
-insert_sample_weather_data(1)
+insert_sample_weather_data(30)

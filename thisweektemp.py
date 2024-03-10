@@ -4,7 +4,6 @@ import pickle
 from pmdarima import auto_arima
 from datetime import datetime, timedelta
 
-# Define db_config globally
 db_config = {
     "host": "localhost",
     "user": "root",
@@ -14,21 +13,19 @@ db_config = {
 
 def get_today_temp(cursor):
     today = datetime.now().date()
-    query = f"""
+    query = """
     SELECT AVG(Wt_temp) AS Avg_Temperature
     FROM weather_data
-    WHERE DATE(Wt_recordedtime) = '{today}'
+    WHERE DATE(Wt_recordedtime) = %s
     """
-    cursor.execute(query)
+    cursor.execute(query, (today,))
     row = cursor.fetchone()
     return row[0] if row else None
 
-# Connect to the database
 try:
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
 
-    # Fetch daily average data from the last 7 days
     query = """
     SELECT DATE(Wt_recordedtime) AS Date,
            AVG(Wt_temp) AS Avg_Temperature,
@@ -45,42 +42,35 @@ try:
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    # Convert fetched data into a DataFrame
     columns = ['Date', 'Temperature', 'Humidity', 'Pressure', 'CO', 'SO2', 'NO2', 'PM 2.5']
     data = pd.DataFrame(rows, columns=columns)
 
-    # Load the fitted models from pickle file
     with open('arima_models.pkl', 'rb') as f:
         loaded_models = pickle.load(f)
 
-    # Retrain ARIMA models on the combined data
     retrained_models = {}
     for variable in loaded_models:
         model = auto_arima(data[variable], seasonal=False, suppress_warnings=True)
         retrained_models[variable] = model
 
-    # Forecast future values for each variable using the retrained ARIMA models
     forecasts = {}
     for variable, model in retrained_models.items():
         forecasts[variable] = model.predict(n_periods=6)
 
-    # Get today's temperature
     today_temp = get_today_temp(cursor)
 
     def get_thisweektemp_weather():
         result = {
             "Today_Temperature": today_temp,
             "Temperature": forecasts['Temperature'],
-          
+            # Add other forecasted variables here
         }
         return result
 
-    # Call the function to get forecasted values
     forecasted_values = get_thisweektemp_weather()
     # print("\nForecasted Values:")
     # print(forecasted_values)
 
-    # Close cursor and connection
     cursor.close()
     connection.close()
 

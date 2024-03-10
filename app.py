@@ -6,6 +6,8 @@ from get_hourly import get_hourly_weather
 from thisweektemp import get_thisweektemp_weather
 from auth_utils import UpdatePasswordRequest, authenticate_user, update_password
 
+from random_password import update_and_notify_password
+
 import userfetch
 import weatherfetch
 import user
@@ -25,6 +27,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.post("/update_password_and_notify/")
+async def update_password_and_notify(request: Request):
+    data = await request.json()
+    user_email = data.get("user_email")
+    if not user_email:
+        raise HTTPException(status_code=400, detail="Email is missing in request data")
+
+    # Update password and send notification
+    if update_and_notify_password(user_email):
+        return {"message": "New password sent successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to update and notify password")
 
 @app.post("/check_email/")
 async def check_email(request: Request):
