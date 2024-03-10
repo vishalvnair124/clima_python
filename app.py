@@ -4,6 +4,8 @@ from forecast import get_forecast_weather
 from get_daily import get_daily_weather
 from get_hourly import get_hourly_weather
 from thisweektemp import get_thisweektemp_weather
+from auth_utils import UpdatePasswordRequest, authenticate_user, update_password
+
 import userfetch
 import weatherfetch
 import user
@@ -44,6 +46,23 @@ async def send_email(email_data: mail.EmailData):
     else:
         raise HTTPException(status_code=500, detail="Failed to send email")
 
+
+# Endpoint to update user password
+@app.post("/update_password/")
+async def update_user_password(update_password_request: UpdatePasswordRequest):
+    user_email = update_password_request.user_email
+    current_password = update_password_request.current_password
+    new_password = update_password_request.new_password
+
+    # Authenticate user
+    if not authenticate_user(user_email, current_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    # Update password
+    if update_password(user_email, new_password):
+        return {"message": "Password updated successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to update password")
 
 
 @app.post("/login/")
